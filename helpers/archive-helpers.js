@@ -26,16 +26,46 @@ exports.initialize = function(pathsObj) {
 // modularize your code. Keep it clean!
 
 exports.readListOfUrls = function(callback) {
+	fs.readFile(exports.paths.list, function(err, data) {
+		if (err) throw error;
+		callback(data.toString().split('\n'));
+	});
 };
 
 exports.isUrlInList = function(url, callback) {
+	return fs.readFile(exports.paths.list, function(err, data) {
+		if (err) throw error;
+			if (data.indexOf(url) > -1) {
+				return callback(true);
+			} else {
+				return callback(false);
+			}
+		});
 };
 
 exports.addUrlToList = function(url, callback) {
+	fs.appendFile(exports.paths.list, url + '\n', (err, data) => {
+		if (err) throw err;
+		callback(url);
+	});
 };
 
 exports.isUrlArchived = function(url, callback) {
+	fs.readdir(exports.paths.archivedSites, function(err, files) {
+		if (err) throw error;
+
+		if (files.indexOf(url) > -1) {
+			return callback(true);
+		} else {
+			return callback(false);
+		}
+	});
 };
 
 exports.downloadUrls = function(urls) {
+	urls.forEach(function(url) {
+		fs.writeFile(exports.paths.archivedSites + '/' + url, function(err) {
+			if (err) throw error;
+		});
+	});
 };
